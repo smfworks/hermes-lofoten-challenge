@@ -23,7 +23,7 @@ Named for **stockfish (tørrfisk)**, the air-dried cod that has been Lofoten's p
 
 | Artifact | Type | Description |
 |----------|------|-------------|
-| [hermes-plugin-skill-gap-analyzer](team-stockfish/hermes-plugin-skill-gap-analyzer/) | Plugin | Analyzes the skill library for coverage gaps, duplicates, and quality issues. Exposes `skill_gap_scan`, `skill_gap_report`, `skill_similarity` tools. 10 tests, all passing. |
+| [hermes-plugin-skill-gap-analyzer](team-stockfish/hermes-plugin-skill-gap-analyzer/) | Plugin | Analyzes the skill library for coverage gaps, duplicates, and quality issues. Exposes `skill_gap_scan`, `skill_gap_report`, `skill_similarity` tools. 77 tests, all passing. |
 | [cross-agent-collaboration](team-stockfish/cross-agent-collaboration/) | Skill | Multi-agent collaboration protocols — delegate_task patterns, cross-profile communication, coordination patterns, conflict resolution. |
 
 ### Team Norddal — Fleet Pulse
