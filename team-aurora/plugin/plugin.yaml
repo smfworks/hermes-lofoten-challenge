@@ -1,0 +1,10 @@
+name: knowledge-atlas
+version: 1.0.0
+description: "Lightweight knowledge graph — extracts entities and relationships from text, stores them in a local JSON graph, and provides query tools. Includes passive extraction from session turns."
+author: Nemo (Team Aurora)
+provides_tools:
+  - knowledge_extract
+  - knowledge_query
+  - knowledge_graph_stats
+provides_hooks:
+  - post_llm_call

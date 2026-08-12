@@ -1,0 +1,11 @@
+name: session-observability
+version: 1.0.0
+description: "Passive session observability — tracks tool usage, response times, error rates, and session health metrics. Provides /session-stats command and session_report tool."
+author: Nemo (Team Nordfjord)
+provides_tools:
+  - session_report
+  - session_health
+provides_hooks:
+  - post_tool_call
+  - on_session_start
+  - on_session_end

@@ -1,0 +1,11 @@
+name: skill-forge
+version: 1.0.0
+description: "Testing and validation tools for Hermes skills and plugins. Validates structure, runs edge-case stress tests, and tracks tool execution timing."
+author: Nemo (Team Maelstrom)
+provides_tools:
+  - validate_skill
+  - validate_plugin
+  - test_tool_handler
+  - stress_test_tool
+provides_hooks:
+  - post_tool_call
