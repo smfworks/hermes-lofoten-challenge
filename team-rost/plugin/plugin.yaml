@@ -1,0 +1,8 @@
+name: context-bridge
+version: 1.0.0
+description: "Preserves context across session resets by saving snapshots of recent tool calls, key findings, and task state. Exposes /context-bridge slash command for listing, restoring, and clearing snapshots."
+author: "Team Røst — SMF Works Lofoten Challenge"
+hooks:
+  - on_session_end
+  - on_session_start
+  - on_session_reset

@@ -1,0 +1,8 @@
+name: cost-watch
+version: 1.0.0
+description: "Track API costs per session and per profile using post_api_request hooks. Inspired by the Lofoten stockfish trade — every shipment of dried cod was logged and accounted for; this plugin logs and accounts for every token of agent work."
+author: "Team Svolvær — SMF Works Lofoten Challenge"
+hooks:
+  - post_api_request
+  - on_session_start
+  - on_session_end

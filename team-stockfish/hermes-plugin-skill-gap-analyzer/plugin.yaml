@@ -1,0 +1,17 @@
+name: skill-gap-analyzer
+version: "1.0.0"
+description: >-
+  Skill library gap analysis for Hermes agents. Scans skill directories,
+  parses SKILL.md frontmatter, and identifies coverage gaps — categories
+  with few skills, overly narrow skills, missing capabilities, and
+  potential duplicates. Exposes skill_gap_scan, skill_gap_report, and
+  skill_similarity tools for agent self-diagnosis of its own skill
+  ecosystem. Stores scan results in a local SQLite database.
+author: "SMF Works — Team Stockfish"
+hooks:
+  - on_session_start
+  - on_skill_lifecycle
+provides_tools:
+  - skill_gap_scan
+  - skill_gap_report
+  - skill_similarity
