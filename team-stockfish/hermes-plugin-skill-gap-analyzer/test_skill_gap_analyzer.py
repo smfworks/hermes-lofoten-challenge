@@ -151,6 +151,7 @@ class TestPluginRegistration:
 
     def test_register_handles_config_load_failure(self, mock_ctx, temp_db):
         """Plugin should register even if config loading fails."""
+        pytest.importorskip("hermes_cli")
         with patch("hermes_cli.config.load_config", side_effect=Exception("no config")):
             gap_plugin.register(mock_ctx)
         assert mock_ctx.register_hook.call_count >= 2
