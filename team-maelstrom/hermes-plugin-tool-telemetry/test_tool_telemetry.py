@@ -91,6 +91,7 @@ class TestPluginRegistration:
 
     def test_register_handles_config_load_failure(self, mock_ctx, temp_db):
         """Plugin should register even if config loading fails."""
+        pytest.importorskip("hermes_cli")
         with patch("hermes_cli.config.load_config", side_effect=Exception("no config")):
             telemetry_plugin.register(mock_ctx)
         # Should still have registered hooks
