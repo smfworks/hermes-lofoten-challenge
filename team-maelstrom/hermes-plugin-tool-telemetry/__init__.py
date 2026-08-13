@@ -30,21 +30,52 @@ from typing import Any, Dict, List, Optional
 DEFAULT_MAX_ARG_LENGTH = 500
 DEFAULT_RETENTION_DAYS = 30
 
-# Patterns that look like secrets — redacted before storage
+# Patterns that look like secrets — redacted before storage.
+# More-specific prefixes (sk-ant, ghp) must come before generic prefixes.
 DEFAULT_REDACT_PATTERNS = [
-    r"ghp_\w+",           # GitHub PAT
-    r"gho_\w+",           # GitHub OAuth
-    r"sk-[a-zA-Z0-9]+",   # OpenAI key
-    r"AKIA[A-Z0-9_]+",  # AWS access key (includes underscores)
-    r"xox[bpoa]-[\w-]+",  # Slack token
-    r"AIza[a-zA-Z0-9_-]+",# Google API key
-    r"hf_[a-zA-Z0-9]+",   # HuggingFace token
+    r"ghp_[A-Za-z0-9_]+",
+    r"gho_[A-Za-z0-9_]+",
+    r"sk-ant-[A-Za-z0-9_-]+",
+    r"sk-[A-Za-z0-9-]+",
+    r"AKIA[A-Z0-9_]+",
+    r"xox[bpoa]-[A-Za-z0-9-]+",
+    r"AIza[A-Za-z0-9_-]+",
+    r"hf_[A-Za-z0-9]+",
+    r"xai-[A-Za-z0-9_-]+",
+    r"(?i)\bbearer\s+[A-Za-z0-9._\-+/=]+",
+    r"(?i)\b(?:password|passwd|api[_-]?key|secret|token|authorization)\s*[:=]\s*\S+",
+    r"eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+",
 ]
+
+_SENSITIVE_ARG_KEYS = frozenset({
+    "password",
+    "passwd",
+    "secret",
+    "token",
+    "api_key",
+    "apikey",
+    "authorization",
+    "auth",
+    "access_token",
+    "refresh_token",
+})
 
 
 def _get_hermes_home() -> Path:
-    """Resolve HERMES_HOME or fall back to ~/.hermes."""
-    return Path(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")))
+    """Resolve the active Hermes home.
+
+    Explicit HERMES_HOME wins (tests and operators). Inside Hermes, fall
+    back to hermes_constants.get_hermes_home() so profile context is honored.
+    """
+    env = os.environ.get("HERMES_HOME")
+    if env:
+        return Path(env)
+    try:
+        from hermes_constants import get_hermes_home
+
+        return Path(get_hermes_home())
+    except Exception:
+        return Path(os.path.expanduser("~/.hermes"))
 
 
 def _get_telemetry_db_path() -> Path:
@@ -84,6 +115,10 @@ def _redact_args(args: Dict[str, Any], patterns: List[str], max_length: int) -> 
         # Convert all values to strings for storage, redacting secrets
         safe = {}
         for k, v in args.items():
+            key_norm = str(k).lower().replace("-", "_")
+            if key_norm in _SENSITIVE_ARG_KEYS:
+                safe[k] = "[REDACTED]"
+                continue
             if isinstance(v, str):
                 safe[k] = _redact_string(v, patterns, max_length)
             elif isinstance(v, (dict, list)):

@@ -45,8 +45,16 @@ IN_REPO_SKILLS_MARKER = "skills"
 
 
 def _get_hermes_home() -> Path:
-    """Resolve HERMES_HOME or fall back to ~/.hermes."""
-    return Path(os.environ.get("HERMES_HOME", os.path.expanduser("~/.hermes")))
+    """Resolve the active Hermes home. Explicit HERMES_HOME wins."""
+    env = os.environ.get("HERMES_HOME")
+    if env:
+        return Path(env)
+    try:
+        from hermes_constants import get_hermes_home
+
+        return Path(get_hermes_home())
+    except Exception:
+        return Path(os.path.expanduser("~/.hermes"))
 
 
 def _get_gap_db_path() -> Path:
@@ -70,14 +78,16 @@ def _get_skill_dirs() -> List[Path]:
     if primary.exists():
         dirs.append(primary)
 
-    # Profile-specific skills
-    profiles_dir = home / "profiles"
-    if profiles_dir.exists():
-        for profile in profiles_dir.iterdir():
-            if profile.is_dir():
-                pskills = profile / "skills"
-                if pskills.exists():
-                    dirs.append(pskills)
+    # Current-home skills only. Do not walk sibling profiles unless opted in —
+    # default ~/.hermes/profiles/* would otherwise scan every agent.
+    if os.environ.get("HERMES_SCAN_ALL_PROFILES") == "1":
+        profiles_dir = home / "profiles"
+        if profiles_dir.exists():
+            for profile in profiles_dir.iterdir():
+                if profile.is_dir():
+                    pskills = profile / "skills"
+                    if pskills.exists():
+                        dirs.append(pskills)
 
     # In-repo skills (if HERMES_HOME is the repo root)
     repo_skills = home / IN_REPO_SKILLS_MARKER

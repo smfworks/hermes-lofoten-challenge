@@ -68,7 +68,7 @@ chmod +x scripts/test.sh
 
 CI (GitHub Actions) runs each suite as its own job. See CONTRIBUTING.md.
 
-Honest status: telemetry 41/41 isolated; skill-gap-analyzer 77/77 isolated. Other team plugins have writeups (`test-report.md`) but no automated suite yet.
+Honest status: telemetry 47/47 isolated; skill-gap-analyzer 78/78 isolated. Other team plugins have writeups (`test-report.md`) but no automated suite yet.
 
 ## License
 

@@ -129,6 +129,50 @@ class TestSecretRedaction:
         result = telemetry_plugin._redact_string("just normal text", telemetry_plugin.DEFAULT_REDACT_PATTERNS, 500)
         assert result == "just normal text"
 
+    def test_bearer_token_redacted(self):
+        result = telemetry_plugin._redact_string(
+            "Authorization: Bearer TESTONLY.header.payload",
+            telemetry_plugin.DEFAULT_REDACT_PATTERNS,
+            500,
+        )
+        assert "TESTONLY.header.payload" not in result
+        assert "[REDACTED]" in result
+
+    def test_anthropic_key_fully_redacted(self):
+        fake = "sk-ant-api03-TESTONLY000000000000"
+        result = telemetry_plugin._redact_string(fake, telemetry_plugin.DEFAULT_REDACT_PATTERNS, 500)
+        assert "TESTONLY" not in result
+        assert "api03" not in result
+        assert "[REDACTED]" in result
+
+    def test_xai_key_redacted(self):
+        fake = "xai-TESTONLY0000000000000000"
+        result = telemetry_plugin._redact_string(fake, telemetry_plugin.DEFAULT_REDACT_PATTERNS, 500)
+        assert "TESTONLY" not in result
+
+    def test_jwt_redacted(self):
+        fake = "eyJhbGciOiTESTONLY.eyJzdWIiOiJ0ZXN0.TESTSIG"
+        result = telemetry_plugin._redact_string(fake, telemetry_plugin.DEFAULT_REDACT_PATTERNS, 500)
+        assert "TESTSIG" not in result
+
+    def test_password_assignment_redacted(self):
+        result = telemetry_plugin._redact_string(
+            "password=hunter2secret",
+            telemetry_plugin.DEFAULT_REDACT_PATTERNS,
+            500,
+        )
+        assert "hunter2secret" not in result
+
+    def test_sensitive_arg_key_redacted_even_without_pattern(self):
+        result = telemetry_plugin._redact_args(
+            {"password": "notapatternvalue", "ok": "hello"},
+            telemetry_plugin.DEFAULT_REDACT_PATTERNS,
+            500,
+        )
+        parsed = json.loads(result)
+        assert parsed["password"] == "[REDACTED]"
+        assert parsed["ok"] == "hello"
+
     def test_truncation_works(self):
         long_str = "x" * 1000
         result = telemetry_plugin._redact_string(long_str, [], 100)

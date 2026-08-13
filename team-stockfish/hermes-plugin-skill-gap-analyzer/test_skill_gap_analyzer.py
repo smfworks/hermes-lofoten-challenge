@@ -304,6 +304,17 @@ class TestSkillScanning:
         dirs = gap_plugin._get_skill_dirs()
         assert any("skills" in str(d) for d in dirs)
 
+    def test_get_skill_dirs_skips_sibling_profiles_by_default(self, tmp_path, monkeypatch):
+        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.delenv("HERMES_SCAN_ALL_PROFILES", raising=False)
+        gap_plugin._config.clear()
+        (tmp_path / "skills").mkdir()
+        other = tmp_path / "profiles" / "other-agent" / "skills"
+        other.mkdir(parents=True)
+        (other / "secret" / "SKILL.md").mkdir(parents=True)
+        dirs = gap_plugin._get_skill_dirs()
+        assert not any("other-agent" in str(d) for d in dirs)
+
 
 # ---------------------------------------------------------------------------
 # Gap Analysis Tests
