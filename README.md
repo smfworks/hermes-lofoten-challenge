@@ -57,6 +57,19 @@ Named for **Svolvær**, the administrative center of Vesterålen/Lofoten and the
 
 The research that informed this sprint is in [`research/lofoten-research.md`](research/lofoten-research.md) — a comprehensive document covering geology (2-billion-year-old rock), geography (7 main islands, 175km archipelago), climate, biodiversity, 7,000 years of human settlement, the stockfish trade, Norse and Sámi influences, the Moskstraumen maelstrom, and modern challenges.
 
+## Production testing
+
+Automated tests exist for two plugins. They **must be run in isolated processes** because each plugin is a module named `__init__.py`. A single `pytest` collection over the repo imports the wrong plugin and fails ~73 tests that pass in isolation.
+
+```bash
+chmod +x scripts/test.sh
+./scripts/test.sh
+```
+
+CI (GitHub Actions) runs each suite as its own job. See CONTRIBUTING.md.
+
+Honest status: telemetry 41/41 isolated; skill-gap-analyzer 77/77 isolated. Other team plugins have writeups (`test-report.md`) but no automated suite yet.
+
 ## License
 
 MIT
